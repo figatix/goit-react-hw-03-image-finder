@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import Searchbar from './Searchbar';
 import Loader from './Loader';
 import ImageGallery from './ImageGallery';
-// import ImageGalleryItem from './ImageGalleryItem';
 import images from '../randomImages.json';
 import { StyledApp } from './App.styled'
 import LoadMoreBtn from './Button/Button';
+import Modal from './Modal';
 
 
 class App extends Component {
@@ -13,7 +13,7 @@ class App extends Component {
   state = {
     searchQuery: '',
     isOpenLoader: true,
-    isOpenModal: true,
+    isOpenModal: false,
     currentImg: null,
   }
 
@@ -25,12 +25,25 @@ class App extends Component {
 
   handlerCurrentImg = (id) => {
     const currImg = images.find(el => el.id === id)
-    console.log(currImg);
     this.setState({
-      currentImg: currImg.srcOriginal
-    }, () => { console.log('This state', this.state.currentImg) })
+      currentImg: currImg,
+      isOpenModal: true,
+    })
+  }
 
-    console.log('This state', this.state.currentImg);
+  onCloseModal = (e) => {
+
+    if (e.code === "Escape") {
+      this.setState({
+        isOpenModal: false,
+      })
+    }
+
+    if (e.target === e.currentTarget) {
+      this.setState({
+        isOpenModal: false,
+      })
+    }
   }
 
   render() {
@@ -43,6 +56,7 @@ class App extends Component {
         </ImageGallery>
         <LoadMoreBtn />
         {this.state.isOpenLoader && <Loader />}
+        {this.state.isOpenModal && <Modal onCloseModal={this.onCloseModal} currentImg={this.state.currentImg} />}
       </StyledApp>
     );
   }

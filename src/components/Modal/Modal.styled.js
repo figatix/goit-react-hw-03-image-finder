@@ -12,6 +12,7 @@ const StyledOverlay = styled.div`
   background-color: rgba(0, 0, 0, 0.8);
   z-index: 1200;
 `;
+
 const StyledModal = styled.div`
   max-width: calc(100vw - 48px);
   max-height: calc(100vh - 24px);
