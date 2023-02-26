@@ -7,24 +7,55 @@ import {
   StyledSearchFormBtnLabel,
   StyledSearchFormInput,
 } from './Searchbar.styled'
+import { BiSearchAlt2 } from 'react-icons/bi';
+import { toast } from 'react-toastify';
+
 
 export default class Searchbar extends Component {
 
+  state = {
+    inputValue: '',
+  }
+
+  handlerInputValue = (e) => {
+    this.setState({
+      inputValue: e.target.value
+    })
+  }
+
+  onSubmit = (e) => {
+    e.preventDefault()
+    console.log(this.state);
+    const value = this.state.inputValue.toLowerCase().trim()
+    if (!value) {
+      toast.error('Empty input')
+      return
+    }
+    //
+    this.props.onSubmitForm(value)
+    // 
+    this.setState({
+      inputValue: ''
+    })
+  }
+
   render() {
-    const { onInputChange, value } = this.props;
+    const { inputValue } = this.state;
 
     return (
       <StyledSearcbar>
-        <StyledSearchForm>
+        <StyledSearchForm onSubmit={this.onSubmit}>
           <StyledSearchFormBtn type="submit" aria-label='search button'>
+            <BiSearchAlt2 width="30" height="30" />
             <StyledSearchFormBtnLabel>Search</StyledSearchFormBtnLabel>
           </StyledSearchFormBtn>
 
           <StyledSearchFormInput
             type="text"
             autoComplete="off"
-            onChange={onInputChange}
-            value={value}
+            onChange={this.handlerInputValue}
+            name="searchInput"
+            value={inputValue}
             autoFocus
             placeholder="Search images and photos"
           />

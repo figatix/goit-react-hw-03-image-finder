@@ -8,24 +8,27 @@ const modalRoot = document.querySelector('#modal-root')
 export default class Modal extends Component {
 
   componentDidMount() {
-    window.addEventListener('keydown', this.props.onCloseModal)
-    const overlay = document.querySelector('.overlay')
-    overlay.addEventListener('click', this.props.onCloseModal)
+    window.addEventListener('keydown', this.handlerCloseModal)
+    window.addEventListener('click', this.handlerCloseModal)
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.props.onCloseModal);
-    const overlay = document.querySelector('.overlay');
-    overlay.removeEventListener('click', this.props.onCloseModal);
+    window.removeEventListener('keydown', this.handlerCloseModal);
+    window.removeEventListener('click', this.handlerCloseModal);
+  }
+
+  handlerCloseModal = (e) => {
+    if (e.code === "Escape" || e.target === e.currentTarget) {
+      this.props.onCloseModal()
+    }
   }
 
 
   render() {
-    // const { id, srcOriginal, alt } = this.props.currentImg;
-    // console.log(this.props.currentImg);
+
     return createPortal(
 
-      <StyledOverlay className='overlay'>
+      <StyledOverlay onClick={this.handlerCloseModal}>
         <StyledModal >
           {this.props.children}
         </StyledModal>

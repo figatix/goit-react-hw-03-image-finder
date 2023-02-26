@@ -1,37 +1,39 @@
 import React, { Component } from 'react';
 import Searchbar from './Searchbar';
-import Loader from './Loader';
 import ImageGallery from './ImageGallery';
 import images from '../randomImages.json';
 import { StyledApp } from './App.styled'
 import LoadMoreBtn from './Button/Button';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 class App extends Component {
 
   state = {
-    searchQuery: '',
-    isOpenLoader: true,
+    fetchQuery: '',
   }
 
-  handlerInputValue = (e) => {
-    this.setState({
-      searchQuery: e.target.value
-    })
+  onSubmitForm = (value) => {
+    this.setState({ fetchQuery: value })
   }
 
   render() {
 
     return (
       <StyledApp >
-        <Searchbar onInputChange={this.handlerInputValue} value={this.state.searchQuery} />
+        <Searchbar
+          onSubmitForm={this.onSubmitForm}
+        />
         <ImageGallery
           images={images}
+          query={this.state.fetchQuery}
         >
 
         </ImageGallery>
         <LoadMoreBtn />
-        {this.state.isOpenLoader && <Loader />}
+        {/* {this.state.isOpenLoader && <Loader />} */}
+        <ToastContainer autoClose={2000} />
       </StyledApp>
     );
   }

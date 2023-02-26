@@ -1,4 +1,5 @@
 
+
 import Modal from 'components/Modal';
 import React, { Component } from 'react';
 import { StyledImageGalleryItem, StyledImageGalleryItemImg } from './ImageGalleryItem.styled';
@@ -18,18 +19,12 @@ export default class ImageGalleryItem extends Component {
     })
   }
 
-  onCloseModal = (e) => {
-    if (e.code === "Escape") {
-      this.setState({
-        isOpenModal: false,
-      })
-    }
-    if (e.target === e.currentTarget) {
-      this.setState({
-        isOpenModal: false,
-      })
-    }
+  onCloseModal = () => {
+    this.setState({
+      isOpenModal: false,
+    })
   }
+
 
   render() {
     const { id, src, alt, srcOriginal } = this.props;
@@ -46,6 +41,7 @@ export default class ImageGalleryItem extends Component {
             <img id={id} src={srcOriginal} alt={alt} width="500" />
           </Modal>
         }
+
       </StyledImageGalleryItem>
     )
   }
