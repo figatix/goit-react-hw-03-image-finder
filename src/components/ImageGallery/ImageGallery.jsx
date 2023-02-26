@@ -5,8 +5,9 @@ import { StyledImageGalley } from './ImageGallery.styled';
 
 export default class ImageGallery extends Component {
 
+
   render() {
-    const { images, onImgClick } = this.props;
+    const { images } = this.props;
 
     return (
       <StyledImageGalley>
@@ -16,10 +17,11 @@ export default class ImageGallery extends Component {
             return (
               <ImageGalleryItem
                 src={img.srcSmall}
+                srcOriginal={img.srcOriginal}
                 alt={img.alt}
                 key={img.id}
                 id={img.id}
-                onImgClick={onImgClick} />
+                images={images} />
             )
           })
         }

@@ -1,6 +1,9 @@
 
 import React, { Component } from 'react';
+import { createPortal } from 'react-dom';
 import { StyledModal, StyledOverlay } from './Modal.styled';
+
+const modalRoot = document.querySelector('#modal-root')
 
 export default class Modal extends Component {
 
@@ -18,15 +21,16 @@ export default class Modal extends Component {
 
 
   render() {
-    const { id, srcOriginal, alt } = this.props.currentImg;
-    console.log(srcOriginal);
-    return (
+    // const { id, srcOriginal, alt } = this.props.currentImg;
+    // console.log(this.props.currentImg);
+    return createPortal(
 
       <StyledOverlay className='overlay'>
         <StyledModal >
-          <img id={id} src={srcOriginal} alt={alt} width="500" />
+          {this.props.children}
         </StyledModal>
-      </StyledOverlay>
+      </StyledOverlay>,
+      modalRoot
     )
   }
 }
