@@ -7,8 +7,9 @@ import {
   StyledSearchFormBtnLabel,
   StyledSearchFormInput,
 } from './Searchbar.styled'
-import { BiSearchAlt2 } from 'react-icons/bi';
+// import { BiSearchAlt2 } from 'react-icons/bi';
 import { toast } from 'react-toastify';
+import { SearchIcon } from './SearchIcon';
 
 
 export default class Searchbar extends Component {
@@ -51,7 +52,7 @@ export default class Searchbar extends Component {
       <StyledSearcbar>
         <StyledSearchForm onSubmit={this.onSubmit}>
           <StyledSearchFormBtn type="submit" aria-label='search button'>
-            <BiSearchAlt2 width="30" height="30" />
+            <SearchIcon />
             <StyledSearchFormBtnLabel>Search</StyledSearchFormBtnLabel>
           </StyledSearchFormBtn>
 

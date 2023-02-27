@@ -85,7 +85,7 @@ export default class ImageGallery extends Component {
         <ImageGalleryItem
           key={img.id}
           id={img.id}
-          src={img.previewURL}
+          src={img.webformatURL}
           srcOriginal={img.largeImageURL}
           alt={img.tags}
           images={queryHits}
