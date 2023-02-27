@@ -19,100 +19,54 @@ export default class ImageGallery extends Component {
     page: 1,
   }
 
-  async componentDidUpdate(prevProps, prevState) {
-    const prevQuery = prevProps.query
-    const newQuery = this.props.query
-    const prevPage = prevState.page
-    const newPage = this.state.page
+  componentDidUpdate(prevProps, prevState) {
+    const { query, } = this.props;
+    const { page } = this.state;
+    const isQueryChanged = prevProps.query !== query;
+    const isPageChanged = prevState.page !== page;
 
-    if (prevQuery !== newQuery) {
-      console.log("BOOOOOO", newQuery);
-      this.setState({ status: 'pending' })
-
-      try {
-        const { hits, total, totalHits } = await getImages(newQuery, prevPage)
-        // console.log("🚀 ~ file: ImageGallery.jsx:32 ~ ImageGallery ~ componentDidUpdate ~ totalHits:", totalHits)
-        // console.log("🚀 ~ file: ImageGallery.jsx:32 ~ ImageGallery ~ componentDidUpdate ~ total:", total)
-        // console.log("🚀 ~ file: ImageGallery.jsx:32 ~ ImageGallery ~ componentDidUpdate ~ hits:", hits)
-
-        if (totalHits === 0) {
-          toast.error(`Oops... We don't find anything..`)
-          return this.setState({ status: 'idle' })
-        }
-
-        return this.setState({
-          queryHits: hits,
-          total,
-          totalHits,
-          status: 'resolved'
-        })
-
-      } catch (error) {
-        toast.error(error.message)
-        return this.setState({ error, status: 'rejected' })
-      }
-
-
-
-      // getImages(newQuery, this.state.page)
-      //   .then(data => {
-
-      //     if (data.totalHits === 0) {
-      //       toast.error(`Oops... We don't find anything..`)
-      //       return this.setState({ status: 'idle' })
-      //     }
-
-      //     return this.setState({
-      //       queryResponse: data,
-      //       queryHits: data.hits,
-      //       total: data.total,
-      //       totalHits: data.totalHits,
-      //       status: 'resolved'
-      //     })
-      //   })
-      //   .catch(error => {
-      //     toast.error(error.message)
-      //     return this.setState({ error, status: 'rejected' })
-      //   })
+    if (isQueryChanged || isPageChanged) {
+      this.fetchImages();
     }
-
   }
 
-  handlerMoreBtn = async () => {
-    console.log("object");
-    this.setState(prev => ({ page: prev.page + 1 }))
-    const newQuery = this.props.query
-    const newPage = this.state.page
+  fetchImages = async () => {
+    const { page } = this.state;
+    const { query } = this.props;
 
-    console.log("2345678O", newQuery);
     this.setState({ status: 'pending' })
 
     try {
-      const { hits, total, totalHits } = await getImages(newQuery, newPage)
+      const { hits, total, totalHits } = await getImages(query, page)
+
 
       if (totalHits === 0) {
         toast.error(`Oops... We don't find anything..`)
         return this.setState({ status: 'idle' })
       }
 
-      return this.setState({
-        queryHits: hits,
+      return this.setState((prevState) => ({
+        queryHits: [...prevState.queryHits, ...hits],
         total,
         totalHits,
         status: 'resolved'
-      })
+      }))
+
 
     } catch (error) {
       toast.error(error.message)
       return this.setState({ error, status: 'rejected' })
     }
+  }
 
+  handleMoreBtnClick = () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
   }
 
 
   render() {
     const { queryHits, status, error, totalHits } = this.state;
-    console.log('STATE', this.state);
+    // console.log('STATE', this.state);
 
     if (status === 'idle') {
       return <div>Enter your query</div>
@@ -127,26 +81,24 @@ export default class ImageGallery extends Component {
     }
 
     if (status === 'resolved') {
+      const galleryItems = queryHits.map(img => (
+        <ImageGalleryItem
+          key={img.id}
+          id={img.id}
+          src={img.previewURL}
+          srcOriginal={img.largeImageURL}
+          alt={img.tags}
+          images={queryHits}
+        />
+      ));
       return (
         <>
 
           <StyledImageGallery>
-            {
-              queryHits.map((img) => {
-                return (
-                  <ImageGalleryItem
-                    src={img.previewURL}
-                    srcOriginal={img.largeImageURL}
-                    alt={img.tags}
-                    key={img.id}
-                    id={img.id}
-                    images={queryHits} />
-                )
-              })
-            }
+            {galleryItems}
           </StyledImageGallery>
 
-          {totalHits > 12 && <LoadMoreBtn onClick={this.handlerMoreBtn} />}
+          {totalHits > 12 && <LoadMoreBtn onClick={this.handleMoreBtnClick} />}
         </>
       )
     }
