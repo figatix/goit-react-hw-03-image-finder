@@ -31,6 +31,10 @@ export default class Searchbar extends Component {
       toast.error('Empty input')
       return
     }
+    if (this.props.fetchQuery === value) {
+      toast.error('Enter new query')
+      return
+    }
     //
     this.props.onSubmitForm(value)
     // 
