@@ -26,7 +26,6 @@ export default class Searchbar extends Component {
 
   onSubmit = (e) => {
     e.preventDefault()
-    console.log(this.state);
     const value = this.state.inputValue.toLowerCase().trim()
     if (!value) {
       toast.error('Empty input')
@@ -40,9 +39,9 @@ export default class Searchbar extends Component {
     //
     this.props.onSubmitForm(value)
     // 
-    this.setState({
-      inputValue: ''
-    })
+    // this.setState({
+    //   inputValue: ''
+    // })
   }
 
   render() {
