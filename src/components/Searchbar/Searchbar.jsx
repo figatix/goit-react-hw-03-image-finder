@@ -7,7 +7,6 @@ import {
   StyledSearchFormBtnLabel,
   StyledSearchFormInput,
 } from './Searchbar.styled'
-// import { BiSearchAlt2 } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 import { SearchIcon } from './SearchIcon';
 
@@ -33,7 +32,6 @@ export default class Searchbar extends Component {
     }
     if (this.props.fetchQuery === value) {
       toast.error('Enter new query')
-      // this.props.onSubmitForm('')
       return
     }
     //
@@ -50,7 +48,7 @@ export default class Searchbar extends Component {
     return (
       <StyledSearcbar>
         <StyledSearchForm onSubmit={this.onSubmit}>
-          <StyledSearchFormBtn type="submit" aria-label='search button'>
+          <StyledSearchFormBtn type="submit" >
             <SearchIcon />
             <StyledSearchFormBtnLabel>Search</StyledSearchFormBtnLabel>
           </StyledSearchFormBtn>

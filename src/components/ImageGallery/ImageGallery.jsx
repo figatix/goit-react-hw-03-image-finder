@@ -12,11 +12,11 @@ export default class ImageGallery extends Component {
 
   state = {
     queryHits: [],
-    total: 0,
     totalHits: 0,
     status: 'idle',
     error: null,
     page: 1,
+    isLoading: false,
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -24,6 +24,21 @@ export default class ImageGallery extends Component {
     const { page } = this.state;
     const isQueryChanged = prevProps.query !== query;
     const isPageChanged = prevState.page !== page;
+
+    if (isQueryChanged) {
+      this.setState({
+        queryHits: [],
+        page: 1,
+        error: null
+      })
+      /*
+        ! Після нового запиту, або зміни сторінки викликається КДА = який змінює стейт/
+        ? ПИТАННЯ в тому, Чому коли я при новому запиті змінюю Пейдж на 1, Відбувається скрол?
+         при цьому у Фетчі у файналі стоїть умова, яка викликає функцію скролу тільки коли Пейдж !==1.
+         Напевно десь проблема з чергою викликів, або ще щось..
+      */
+    }
+    console.log("PAGE, into CDU", page);
 
     if (isQueryChanged || isPageChanged) {
       this.fetchImages();
@@ -34,74 +49,124 @@ export default class ImageGallery extends Component {
     const { page } = this.state;
     const { query } = this.props;
 
-    this.setState({ status: 'pending' })
+    this.setState({ isLoading: true })
+    /* ? Чомусь, коли робиш через статус = масив заново відмальовується, а не додається в кінець 
+      ! Тому що коли змінюєш статус = 
+        викликається компонентДідАпдейт =
+        Резолв -прибирається (розмітка пропадає, бо за умовою, розмітка малюється коли статус Резолвд), вішається статус Пендінг (Якщо для пендінга прописана умоав в рендері - відмальовується) =
+        Відбувається запит за АПІ = Ставиться статус Резолвд або Реджектет = Відмальовується нова розмінтка(Виконалась умова в Рендері).
+        Тому і відбувається перерендер всього Блоку.
+        
+        Тому ми використовуєм ісЛоадінг, який не прив'язаний до зміни загальної розмітки.
+    */
+    // this.setState({ status: 'pending' })
 
     try {
-      const { hits, total, totalHits } = await getImages(query, page)
-
+      const { hits, totalHits } = await getImages(query, page)
 
       if (totalHits === 0) {
-        toast.error(`Oops... We don't find anything..`)
-        return this.setState({ status: 'idle' })
+        toast.error(`Oops... We can't find ${this.props.query} `)
+        return this.setState({
+          status: 'idle',
+          // 
+          totalHits: 0,
+          page: 1
+        })
+        // 
       }
 
-      return this.setState((prevState) => ({
+      this.setState((prevState) => ({
         queryHits: [...prevState.queryHits, ...hits],
-        total,
         totalHits,
         status: 'resolved'
+        // 
       }))
-
-
     } catch (error) {
       toast.error(error.message)
-      return this.setState({ error, status: 'rejected' })
+      this.setState({ error, status: 'rejected' })
+    } finally {
+      this.setState({ isLoading: false }
+        // , () => {
+        // if (page !== 1) {
+        //   this.scroll();
+        // }}
+      );
     }
+    /* 
+        ? Коли увів нормальний запит = натиснув ЛоадМоре =
+        Увів невалідний запит =
+        Ломається все!
+
+        Ця проблема пов'язана з тим, що йде прокрутка при новому валідному запиті.
+
+        типу: (увів нормальний запит = натиснув ЛоадМоре =
+        Увів Валідний запит =
+        прокрутка!)
+
+      */
   }
 
   handleMoreBtnClick = () => {
     this.setState(prevState => ({ page: prevState.page + 1 }));
   }
 
+  scroll = () => {
+    const { height: cardHeight } = document
+      .querySelector('.gallery')
+      .firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+      top: cardHeight * 1.5,
+      behavior: 'smooth',
+    });
+  }
 
   render() {
-    const { queryHits, status, error, totalHits } = this.state;
-    // console.log('STATE', this.state);
+    const { queryHits, status, error, totalHits, isLoading, page } = this.state;
+    console.log('STATE', this.state);
 
-    if (status === 'idle') {
-      return <div>Enter your query</div>
-    }
+    const isLoadMoreVisible =
+      (totalHits > 12) && (page < Math.ceil(totalHits / 12));
 
-    if (status === 'pending') {
-      return <Loader />
-    }
+    // if (status === 'idle') {
+    //   return <div style={{ marginInline: "auto" }} >Enter your query</div>
+    // }
+
+    // if (status === 'pending') {
+    //   return <Loader />
+    // }
 
     if (status === 'rejected') {
       return <div>{error.message}</div>
     }
 
-    if (status === 'resolved') {
-      const galleryItems = queryHits.map(img => (
-        <ImageGalleryItem
-          key={img.id}
-          id={img.id}
-          src={img.webformatURL}
-          srcOriginal={img.largeImageURL}
-          alt={img.tags}
-          images={queryHits}
-        />
-      ));
-      return (
-        <>
+    // if (status === 'resolved') {
+    // 
+    const galleryItems = queryHits.map(img => (
+      <ImageGalleryItem
+        key={img.id}
+        id={img.id}
+        src={img.webformatURL}
+        srcOriginal={img.largeImageURL}
+        alt={img.tags}
+        images={queryHits}
+      />
+    ));
+    return (
+      <>
 
-          <StyledImageGallery>
-            {galleryItems}
-          </StyledImageGallery>
+        <StyledImageGallery className='gallery' >
+          {galleryItems}
+        </StyledImageGallery>
 
-          {totalHits > 12 && <LoadMoreBtn onClick={this.handleMoreBtnClick} />}
-        </>
-      )
-    }
+        {isLoading && <Loader />}
+        {/*
+            ? Лоадер не вмикається при першому пошуку = бо статус ще не Резолвд, а Ідл. а ми знаходтмся в умові для резолвда. І виконуємось тільки коли статус резолвд . дилемка..
+      */}
+        {isLoadMoreVisible && <LoadMoreBtn onClick={this.handleMoreBtnClick} />}
+      </>
+    )
+    // }
 
   }
 }

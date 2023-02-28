@@ -13,6 +13,16 @@ class App extends Component {
     fetchQuery: '',
   }
 
+  // componentDidUpdate(prevProps, prevState){
+    
+  //   const prevQuery = prevState.fetchQuery
+  //   const newQuery = this.state.fetchQuery
+
+  //   if(prevQuery===newQuery){
+  //     console.log('The same query');
+  //   }
+  // }
+
   onSubmitForm = (value) => {
     this.setState({ fetchQuery: value })
   }
@@ -25,7 +35,7 @@ class App extends Component {
           fetchQuery={this.state.fetchQuery}
           onSubmitForm={this.onSubmitForm}
         />
-        <ImageGallery
+        <ImageGallery 
           // images={images}
           query={this.state.fetchQuery}
         >
