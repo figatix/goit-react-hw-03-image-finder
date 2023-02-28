@@ -16,7 +16,10 @@ export default class Modal extends Component {
   }
 
   handlerCloseModal = (e) => {
-    if (e.code === "Escape" || e.target === e.currentTarget) {
+    const isEscBtn = e.code === "Escape";
+    const isBackdrop = e.target === e.currentTarget;
+
+    if (isEscBtn || isBackdrop) {
       this.props.onCloseModal()
     }
   }
