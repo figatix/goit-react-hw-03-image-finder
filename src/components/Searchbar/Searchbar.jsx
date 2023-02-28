@@ -1,4 +1,5 @@
 
+import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import {
   StyledSearcbar,
@@ -12,6 +13,11 @@ import { SearchIcon } from './SearchIcon';
 
 
 export default class Searchbar extends Component {
+
+  static propTypes = {
+    fetchQuery: PropTypes.string.isRequired,
+    onSubmitForm: PropTypes.func.isRequired,
+  }
 
   state = {
     inputValue: '',

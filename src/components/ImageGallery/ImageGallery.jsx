@@ -5,10 +5,13 @@ import { getImages } from 'components/services/Api';
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import { StyledImageGallery } from './ImageGallery.styled';
-
+import PropTypes from 'prop-types'
 
 
 export default class ImageGallery extends Component {
+  static propTypes = {
+    query: PropTypes.string.isRequired,
+  }
 
   state = {
     queryHits: [],
@@ -19,6 +22,7 @@ export default class ImageGallery extends Component {
     isLoading: false,
   }
 
+
   componentDidUpdate(prevProps, prevState) {
     const { query, } = this.props;
     const { page } = this.state;
@@ -28,9 +32,11 @@ export default class ImageGallery extends Component {
     if (isQueryChanged) {
       this.setState({
         queryHits: [],
+        totalHits: 0,
         page: 1,
         error: null
       })
+      console.log('1 this.state.queryHits into query', this.state.queryHits);
       /*
         ! Після нового запиту, або зміни сторінки викликається КДА = який змінює стейт/
         ? ПИТАННЯ в тому, Чому коли я при новому запиті змінюю Пейдж на 1, Відбувається скрол?
@@ -38,9 +44,11 @@ export default class ImageGallery extends Component {
          Напевно десь проблема з чергою викликів, або ще щось..
       */
     }
-    console.log("PAGE, into CDU", page);
+    console.log("2 PAGE, into CDU", page);
+
 
     if (isQueryChanged || isPageChanged) {
+      console.log('3 this.state.queryHits into page', this.state.queryHits);
       this.fetchImages();
     }
   }
@@ -48,6 +56,9 @@ export default class ImageGallery extends Component {
   fetchImages = async () => {
     const { page } = this.state;
     const { query } = this.props;
+    console.log(' 4 Start Fetch', this.state.queryHits);
+    console.log(" 5 PAGE, into FI", page);
+
 
     this.setState({ isLoading: true })
     /* ? Чомусь, коли робиш через статус = масив заново відмальовується, а не додається в кінець 
@@ -75,12 +86,18 @@ export default class ImageGallery extends Component {
         // 
       }
 
-      this.setState((prevState) => ({
-        queryHits: [...prevState.queryHits, ...hits],
-        totalHits,
-        status: 'resolved'
-        // 
-      }))
+      if (page === 1) {
+        this.setState({
+          queryHits: hits,
+          totalHits,
+        })
+      } else {
+        this.setState((prevState) => ({
+          queryHits: [...prevState.queryHits, ...hits],
+          totalHits,
+        }))
+      }
+
     } catch (error) {
       toast.error(error.message)
       this.setState({ error, status: 'rejected' })
@@ -93,6 +110,7 @@ export default class ImageGallery extends Component {
         }
       );
     }
+    console.log(' 6 End Fetch', this.state.queryHits);
     /* 
         ? Коли увів нормальний запит = натиснув ЛоадМоре =
         Увів невалідний запит =
@@ -124,10 +142,9 @@ export default class ImageGallery extends Component {
 
   render() {
     const { queryHits, status, error, totalHits, isLoading, page } = this.state;
-    console.log('STATE', this.state);
+    console.log('7 STATE', this.state);
 
-    const isLoadMoreVisible =
-      (totalHits > 12) && (page < Math.ceil(totalHits / 12));
+    const isLoadMoreVisible = queryHits.length < totalHits && (page < Math.ceil(totalHits / 12));
 
     // if (status === 'idle') {
     //   return <div style={{ marginInline: "auto" }} >Enter your query</div>

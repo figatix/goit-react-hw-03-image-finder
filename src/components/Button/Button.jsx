@@ -1,16 +1,15 @@
 
-import React, { Component } from 'react';
 import { StyledButton } from './Button.styled';
+import PropTypes from 'prop-types'
 
-export default class LoadMoreBtn extends Component {
+const LoadMoreBtn = ({ onClick }) => {
+  return (
+    <StyledButton onClick={onClick} type="button">Load more</StyledButton>
+  )
+}
+export default LoadMoreBtn;
 
-  render() {
-    const { onClick } = this.props
-
-    return (
-      <StyledButton onClick={onClick} type="button">Load more</StyledButton>
-    )
-  }
-
+LoadMoreBtn.propTypes = {
+  onClick: PropTypes.func.isRequired,
 }
 
