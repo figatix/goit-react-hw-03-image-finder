@@ -22,7 +22,6 @@ export default class ImageGallery extends Component {
     isLoading: false,
   }
 
-
   componentDidUpdate(prevProps, prevState) {
     const { query, } = this.props;
     const { page } = this.state;
@@ -36,19 +35,9 @@ export default class ImageGallery extends Component {
         page: 1,
         error: null
       })
-      console.log('1 this.state.queryHits into query', this.state.queryHits);
-      /*
-        ! Після нового запиту, або зміни сторінки викликається КДА = який змінює стейт/
-        ? ПИТАННЯ в тому, Чому коли я при новому запиті змінюю Пейдж на 1, Відбувається скрол?
-         при цьому у Фетчі у файналі стоїть умова, яка викликає функцію скролу тільки коли Пейдж !==1.
-         Напевно десь проблема з чергою викликів, або ще щось..
-      */
     }
-    console.log("2 PAGE, into CDU", page);
-
 
     if (isQueryChanged || isPageChanged) {
-      console.log('3 this.state.queryHits into page', this.state.queryHits);
       this.fetchImages();
     }
   }
@@ -56,21 +45,8 @@ export default class ImageGallery extends Component {
   fetchImages = async () => {
     const { page } = this.state;
     const { query } = this.props;
-    console.log(' 4 Start Fetch', this.state.queryHits);
-    console.log(" 5 PAGE, into FI", page);
-
 
     this.setState({ isLoading: true })
-    /* ? Чомусь, коли робиш через статус = масив заново відмальовується, а не додається в кінець 
-      ! Тому що коли змінюєш статус = 
-        викликається компонентДідАпдейт =
-        Резолв -прибирається (розмітка пропадає, бо за умовою, розмітка малюється коли статус Резолвд), вішається статус Пендінг (Якщо для пендінга прописана умоав в рендері - відмальовується) =
-        Відбувається запит за АПІ = Ставиться статус Резолвд або Реджектет = Відмальовується нова розмінтка(Виконалась умова в Рендері).
-        Тому і відбувається перерендер всього Блоку.
-        
-        Тому ми використовуєм ісЛоадінг, який не прив'язаний до зміни загальної розмітки.
-    */
-    // this.setState({ status: 'pending' })
 
     try {
       const { hits, totalHits } = await getImages(query, page)
@@ -79,11 +55,9 @@ export default class ImageGallery extends Component {
         toast.error(`Oops... We can't find ${this.props.query} `)
         return this.setState({
           status: 'idle',
-          // 
           totalHits: 0,
           page: 1,
         })
-        // 
       }
 
       if (page === 1) {
@@ -110,19 +84,6 @@ export default class ImageGallery extends Component {
         }
       );
     }
-    console.log(' 6 End Fetch', this.state.queryHits);
-    /* 
-        ? Коли увів нормальний запит = натиснув ЛоадМоре =
-        Увів невалідний запит =
-        Ломається все!
-
-        Ця проблема пов'язана з тим, що йде прокрутка при новому валідному запиті.
-
-        типу: (увів нормальний запит = натиснув ЛоадМоре =
-        Увів Валідний запит =
-        прокрутка!)
-
-      */
   }
 
   handleMoreBtnClick = () => {
@@ -142,24 +103,12 @@ export default class ImageGallery extends Component {
 
   render() {
     const { queryHits, status, error, totalHits, isLoading, page } = this.state;
-    console.log('7 STATE', this.state);
-
     const isLoadMoreVisible = queryHits.length < totalHits && (page < Math.ceil(totalHits / 12));
-
-    // if (status === 'idle') {
-    //   return <div style={{ marginInline: "auto" }} >Enter your query</div>
-    // }
-
-    // if (status === 'pending') {
-    //   return <Loader />
-    // }
 
     if (status === 'rejected') {
       return <div>{error.message}</div>
     }
 
-    // if (status === 'resolved') {
-    // 
     const galleryItems = queryHits.map(img => (
       <ImageGalleryItem
         key={img.id}
@@ -172,19 +121,13 @@ export default class ImageGallery extends Component {
     ));
     return (
       <>
-
         <StyledImageGallery className='gallery' >
           {galleryItems}
         </StyledImageGallery>
 
         {isLoading && <Loader />}
-        {/*
-            ? Лоадер не вмикається при першому пошуку = бо статус ще не Резолвд, а Ідл. а ми знаходтмся в умові для резолвда. І виконуємось тільки коли статус резолвд . дилемка..
-      */}
         {isLoadMoreVisible && <LoadMoreBtn onClick={this.handleMoreBtnClick} />}
       </>
     )
-    // }
-
   }
 }

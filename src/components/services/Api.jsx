@@ -15,7 +15,6 @@ export const getImages = async (query, page) => {
       per_page: 12,
     }
   })
-  console.log("object", data);
   return data;
 }
 

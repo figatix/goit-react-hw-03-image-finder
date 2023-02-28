@@ -40,12 +40,8 @@ export default class Searchbar extends Component {
       toast.error('Enter new query')
       return
     }
-    //
+
     this.props.onSubmitForm(value)
-    // 
-    // this.setState({
-    //   inputValue: ''
-    // })
   }
 
   render() {

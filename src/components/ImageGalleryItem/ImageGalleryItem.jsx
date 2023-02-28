@@ -32,10 +32,8 @@ export default class ImageGalleryItem extends Component {
     })
   }
 
-
   render() {
     const { id, src, alt, srcOriginal } = this.props;
-
 
     return (
       <StyledImageGalleryItem>
@@ -48,7 +46,6 @@ export default class ImageGalleryItem extends Component {
             <img id={id} src={srcOriginal} alt={alt} width="1000" />
           </Modal>
         }
-
       </StyledImageGalleryItem>
     )
   }

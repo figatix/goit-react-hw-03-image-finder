@@ -21,11 +21,9 @@ export default class Modal extends Component {
     }
   }
 
-
   render() {
 
     return createPortal(
-
       <StyledOverlay onClick={this.handlerCloseModal}>
         <StyledModal >
           {this.props.children}
