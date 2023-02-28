@@ -15,7 +15,7 @@ import { SearchIcon } from './SearchIcon';
 export default class Searchbar extends Component {
 
   static propTypes = {
-    fetchQuery: PropTypes.string.isRequired,
+    query: PropTypes.string.isRequired,
     onSubmitForm: PropTypes.func.isRequired,
   }
 
