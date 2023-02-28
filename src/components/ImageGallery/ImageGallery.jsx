@@ -70,7 +70,7 @@ export default class ImageGallery extends Component {
           status: 'idle',
           // 
           totalHits: 0,
-          page: 1
+          page: 1,
         })
         // 
       }
@@ -86,10 +86,11 @@ export default class ImageGallery extends Component {
       this.setState({ error, status: 'rejected' })
     } finally {
       this.setState({ isLoading: false }
-        // , () => {
-        // if (page !== 1) {
-        //   this.scroll();
-        // }}
+        , () => {
+          if (this.state.page !== 1) {
+            this.scroll();
+          }
+        }
       );
     }
     /* 
