@@ -38,7 +38,7 @@ export default class ImageGalleryItem extends Component {
           <Modal
             onCloseModal={this.onCloseModal}
           >
-            <img id={id} src={srcOriginal} alt={alt} width="500" />
+            <img id={id} src={srcOriginal} alt={alt} width="1000" />
           </Modal>
         }
 
