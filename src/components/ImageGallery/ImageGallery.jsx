@@ -34,10 +34,12 @@ export default class ImageGallery extends Component {
         totalHits: 0,
         page: 1,
         error: null
-      })
+      }, () => {
+        this.fetchImages();
+      });
     }
 
-    if (isQueryChanged || isPageChanged) {
+    if (isPageChanged) {
       this.fetchImages();
     }
   }
