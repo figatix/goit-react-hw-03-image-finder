@@ -11,6 +11,7 @@ export default class ImageGalleryItem extends Component {
     src: PropTypes.string.isRequired,
     alt: PropTypes.string.isRequired,
     srcOriginal: PropTypes.string.isRequired,
+    images: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   }
 
   state = {

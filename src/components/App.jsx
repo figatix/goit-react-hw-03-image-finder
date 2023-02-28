@@ -5,10 +5,14 @@ import { StyledApp } from './App.styled'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getImages } from './services/Api';
+import PropTypes from 'prop-types'
 
 const PER_PAGE = 12
 
 class App extends Component {
+  static propTypes = {
+    query: PropTypes.string,
+  }
 
   state = {
     query: '',
