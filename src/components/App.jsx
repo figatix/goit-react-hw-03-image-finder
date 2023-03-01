@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Searchbar from './Searchbar';
 import ImageGallery from './ImageGallery';
+import Loader from 'components/Loader';
+import LoadMoreBtn from 'components/Button/Button';
 import { StyledApp } from './App.styled'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -52,28 +54,23 @@ class App extends Component {
         })
       }
 
-      if (page === 1) {
-        this.setState({
-          queryHits: hits,
-          totalHits,
-        })
-      } else {
-        this.setState((prevState) => ({
-          queryHits: [...prevState.queryHits, ...hits],
-          totalHits,
-        }))
-      }
-
-    } catch (error) {
-      toast.error(error.message)
-      this.setState({ error, status: 'rejected' })
-    } finally {
-      this.setState({ isLoading: false }
+      this.setState((prevState) => ({
+        queryHits: [...prevState.queryHits, ...hits],
+        totalHits,
+      })
         , () => {
           if (this.state.page !== 1) {
             this.scroll();
           }
-        }
+        })
+      /*
+      ? Ця колбек функція для скролу має стояти саме в методі this.setState, щоб як зміниться стейт =відбувалась прокрутка. Якщо винести цю функцію окремо, то ефект скролу обламаний. Напевно, через асинхронність.
+      */
+    } catch (error) {
+      toast.error(`Something went wrong..${error?.message}`)
+      this.setState({ error, status: 'rejected' })
+    } finally {
+      this.setState({ isLoading: false }
       );
     }
   }
@@ -116,14 +113,14 @@ class App extends Component {
         />
         <ImageGallery
           queryHits={queryHits}
-          status={status}
-          error={error}
-          isLoading={isLoading}
-          isLoadMoreVisible={isLoadMoreVisible}
-          handleMoreBtnClick={this.handleMoreBtnClick}
         >
         </ImageGallery>
+        {isLoading && <Loader />}
+        {isLoadMoreVisible && <LoadMoreBtn onClick={this.handleMoreBtnClick} />}
         <ToastContainer autoClose={2000} />
+        {status === 'rejected' &&
+          <div>{error?.message}</div>}
+
       </StyledApp >
     );
   }
